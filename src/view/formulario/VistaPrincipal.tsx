@@ -28,9 +28,9 @@ const VistaPrincipal = () => {
                         </div>
                         {/**/}
                         <div className="bg-red-200">
-                            <div className="bg-green-200 flex flex-col">
+                            <div className="bg-green-200 flex flex-col p-4">
                                 <span>
-                                    a
+                                    Proceso de trámite
                                 </span>
                             
                             </div>

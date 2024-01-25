@@ -244,7 +244,7 @@ const FormularioEntrada = () => {
                             <div className="flex flex-col gap-4">
                                 <div className="flex justify-between ">
                                     <span className="font-bold my-auto text-gray-500">
-                                        AUTORES <i className="bi bi-asterisk text-xs text-red-500 ml-2"/>
+                                        AUTORES <i className="bi bi-asterisk text-xs text-red-500 ml-2">   ( Máximo 4 )</i>
                                     </span>
                                     {//Si superan la cantidad de 4 no se puede agregar
                                         codigos.length < 4 && (
