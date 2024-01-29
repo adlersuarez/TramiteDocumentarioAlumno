@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const FormularioEntrada = () => {
@@ -14,10 +15,22 @@ const FormularioEntrada = () => {
 
     const [codigoBoucher, setCodigoBoucher] = useState<string>('')
 
+    const refBoucher = useRef<HTMLInputElement>(null)
+
+    const [step, setStep] = useState(1);
+
+    const handleNext = () => {
+        setStep(step + 1);
+    };
+
+    const handlePrev = () => {
+        setStep(step - 1);
+    };
+
     //Códigos para Título
     const [codigos, setCodigos] = useState<string[]>([''])
     const requisitos: string[] = [
-       'Propuesta de Tesis','Cronograma de trabajo','Carta de aprobación de Tutor'
+        'Propuesta de Tesis', 'Cronograma de trabajo', 'Carta de aprobación de Tutor'
     ]
 
     const handleCodigoChange = (index: number, value: string) => {
@@ -36,195 +49,259 @@ const FormularioEntrada = () => {
         setCodigos(newCodigos);
     };
 
+    interface StepIndicatorProps {
+        stepNumber: number;
+        currentStep: number;
+    }
+
+    const StepIndicator: React.FC<StepIndicatorProps> = ({ stepNumber, currentStep }) => (
+        <div className="flex items-center">
+            <div className={`w-14 h-14 rounded-full text-3xl font-bold flex items-center justify-center border-4
+                            ${currentStep == stepNumber ? 'border-blue-500 text-blue-500' : 'border-gray-400 text-gray-400'
+                }`}
+            >
+                {stepNumber}
+            </div>
+            {/*<p className={`text-lg font-bold ${currentStep === stepNumber && 'text-blue-500'}`}>
+                Paso {stepNumber}
+            </p>*/}
+        </div>
+    );
+
+    const deshabilitadoBoton = () => {
+        if (codigoBoucher.trim() === '') return true
+        // Agregar mas lógica // validez de boucher
+
+    }
+
+    const handleBotonClick = () => {
+        // Lógica a realizar cuando se hace clic en el botón
+        if (codigoBoucher.trim() === '') {
+            toast.error("Debes incluir el código de tu boucher en el trámite")
+            refBoucher.current?.focus()
+            return
+        }
+
+        navigate('/principal')
+    };
+
     return (
 
-        <div className="flex flex-wrap w-screen h-screen bg-gray-100 ">
-            <div className="m-auto">
-                <div className="grid grid-cols-2 gap-8 justify-start">
-                    <div className="bg-blue-200 m-auto mt-0 p-8 rounded-lg">
-                        <div className="font-bold text-2xl text-gray-500 flex flex-col gap-1 mb-4">
-                            <h1 className="f">FORMULARIO DE REGISTRO</h1>
-                            <hr className="border-2 border-gray-500" />
-                        </div>
-
-                        <div className="flex flex-col gap-4 w-96">
-
-                            <div className="flex flex-col gap-1">
-                                <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
-                                    Nombre
-                                </label>
-                                <input
-                                    type="text"
-                                    name="nombre"
-                                    placeholder="Ingrese su nombre completo"
-                                    value={nombre}
-                                    onChange={(e) => setNombre(e.target.value)}
-                                    className={`w-full border border-gray-300 p-2 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 ${nombre != '' && 'bg-gray-200'}`}
-                                    readOnly={nombre != ''}
-                                />
-                            </div>
-                            <div className="flex flex-col gap-1">
-                                <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
-                                    DNI
-                                </label>
-                                <input
-                                    type="text"
-                                    name="dni"
-                                    placeholder="Ingrese su DNI"
-                                    value={dni}
-                                    onChange={(e) => setDni(e.target.value)}
-                                    className={`w-full border border-gray-300 p-2 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 ${dni != '' && 'bg-gray-200'}`}
-                                    readOnly={dni != ''}
-                                />
-                            </div>
-
-                            <div className="flex flex-col gap-1">
-                                <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
-                                    Carrera Profesional
-                                </label>
-                                <input
-                                    type="text"
-                                    name="dni"
-                                    placeholder="Ingrese su DNI"
-                                    value={carrera}
-                                    onChange={(e) => setCarrera(e.target.value)}
-                                    className={`w-full border border-gray-300 p-2 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 ${carrera != '' && 'bg-gray-200'}`}
-                                    readOnly={carrera != ''}
-                                />
-                            </div>
-
-                            <div className="flex flex-col gap-1">
-                                <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
-                                    Código Estudiante
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        name="codigo"
-                                        placeholder="Ingrese su código"
-                                        value={codigo}
-                                        onChange={(e) => setCodigo(e.target.value)}
-                                        className={`w-full border border-gray-300 p-2 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 ${codigo != '' && 'bg-gray-200'}`}
-                                        readOnly={codigo != ''}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="flex flex-col gap-1">
-                                <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
-                                    Dirección
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        name="direccion"
-                                        placeholder="Ingrese su dirección"
-                                        value={direccion}
-                                        onChange={(e) => setDireccion(e.target.value)}
-                                        className={`w-full border border-gray-300 p-2 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 `}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="flex flex-col gap-1">
-                                <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
-                                    Correo
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type="email"
-                                        name="correo"
-                                        placeholder="Ingrese su dirección"
-                                        value={correo}
-                                        onChange={(e) => setCorreo(e.target.value)}
-                                        className={`w-full border border-gray-300 p-2 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 `}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="mx-auto mr-0 mt-4">
-                                <button
-                                    //type="submit"
-                                    onClick={() => navigate('/principal')}
-                                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue flex gap-4"
-                                >
-                                    Continuar <i className="bi bi-arrow-right-square" />
-                                </button>
-                            </div>
-
-                        </div>
+        <div className="flex flex-wrap w-screen h-screen bg-gray-200 ">
+            <div className="mx-auto mt-20">
+                <div className="grid grid-cols-1 gap-8 justify-start">
+                    <Toaster />
+                    <div className="flex items-center justify-between w-60 gap-4 mx-auto">
+                        <StepIndicator stepNumber={1} currentStep={step} />
+                        <div className="border-2 border-gray-300 flex-grow" />
+                        <StepIndicator stepNumber={2} currentStep={step} />
                     </div>
-                    <div className="bg-blue-200 m-auto mt-0 p-8 rounded-lg">
-                        <div className="font-bold text-2xl text-gray-500 flex flex-col gap-1 mb-4">
-                            <h1 className="f">DATOS DE TRÁMITE</h1>
-                            <hr className="border-2 border-gray-500" />
-                        </div>
-                        <div className="flex flex-col gap-4 w-96">
-                            <div className="flex flex-col gap-1">
-                                <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
-                                    Trámite
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        name="tramite"
-                                        value={tramite}
-                                        onChange={(e) => setTramite(e.target.value)}
-                                        className={`w-full border border-gray-300 p-2 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 ${tramite != '' && 'bg-gray-200'}`}
-                                    />
-                                </div>
+
+                    {
+                        step === 1 &&
+                        <div className="bg-white mx-auto p-8 rounded-lg">
+                            <div className="font-bold text-2xl text-gray-400 flex flex-col gap-1 mb-4">
+                                <h1 className="f">VERIFICACIÓN DE DATOS</h1>
+                                <hr className="border-2 border-gray-400" />
                             </div>
 
-                            <div className="flex flex-col gap-1">
-                                <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
-                                    Código Boucher <i className="bi bi-asterisk text-red-500 ml-2"/>
-                                </label>
-                                <div className="relative">
+                            <div className="flex flex-col gap-4 w-96">
+
+                                <div className="flex flex-col gap-1">
+                                    <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
+                                        Nombre
+                                    </label>
                                     <input
                                         type="text"
-                                        name="codigo"
-                                        placeholder="Ingrese el código del Boucher"
-                                        value={codigoBoucher}
-                                        onChange={(e) => setCodigoBoucher(e.target.value)}
-                                        className={`w-full border border-gray-300 p-2 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                                        name="nombre"
+                                        placeholder="Ingrese su nombre completo"
+                                        value={nombre}
+                                        onChange={(e) => setNombre(e.target.value)}
+                                        className={`w-full border border-gray-300 p-2 px-4 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 ${nombre != '' && 'bg-gray-200'}`}
+                                        readOnly={nombre != ''}
                                     />
                                 </div>
+                                <div className="flex flex-col gap-1">
+                                    <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
+                                        DNI
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="dni"
+                                        placeholder="Ingrese su DNI"
+                                        value={dni}
+                                        onChange={(e) => setDni(e.target.value)}
+                                        className={`w-full border border-gray-300 p-2 px-4 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 ${dni != '' && 'bg-gray-200'}`}
+                                        readOnly={dni != ''}
+                                    />
+                                </div>
+
+                                <div className="flex flex-col gap-1">
+                                    <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
+                                        Carrera Profesional
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="dni"
+                                        placeholder="Ingrese su DNI"
+                                        value={carrera}
+                                        onChange={(e) => setCarrera(e.target.value)}
+                                        className={`w-full border border-gray-300 p-2 px-4 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 ${carrera != '' && 'bg-gray-200'}`}
+                                        readOnly={carrera != ''}
+                                    />
+                                </div>
+
+                                <div className="flex flex-col gap-1">
+                                    <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
+                                        Código Estudiante
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            name="codigo"
+                                            placeholder="Ingrese su código"
+                                            value={codigo}
+                                            onChange={(e) => setCodigo(e.target.value)}
+                                            className={`w-full border border-gray-300 p-2 px-4 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 ${codigo != '' && 'bg-gray-200'}`}
+                                            readOnly={codigo != ''}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col gap-1">
+                                    <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
+                                        Dirección
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            name="direccion"
+                                            placeholder="Ingrese su dirección"
+                                            value={direccion}
+                                            onChange={(e) => setDireccion(e.target.value)}
+                                            className={`w-full border border-gray-300 p-2 px-4 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 `}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col gap-1">
+                                    <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
+                                        Correo
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type="email"
+                                            name="correo"
+                                            placeholder="Ingrese su dirección"
+                                            value={correo}
+                                            onChange={(e) => setCorreo(e.target.value)}
+                                            className={`w-full border border-gray-300 p-2 px-4 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 `}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex mt-4">
+                                    <button
+                                        //type="submit"
+                                        onClick={handleNext}
+                                        className="w-full justify-center bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-800 focus:outline-none focus:shadow-outline-blue flex gap-4"
+                                    >
+                                        Continuar {/*<i className="bi bi-arrow-right-square" />*/}
+                                    </button>
+                                </div>
+
                             </div>
-                            <div className="flex flex-col gap-1">
-                                <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
-                                    Requisitos trámite
-                                </label>
-                                <div className="">
-                                    <ul className="list-disc pl-4">
-                                        {requisitos.map((requisito, index) => (
-                                            <li key={index} className="text-sm ml-2">
-                                                {/*{requisito.obtenido ? (
+                        </div>
+                    }
+                    {
+                        step === 2 &&
+                        <div className="bg-white mx-auto p-8 rounded-lg">
+
+                            <div className="font-bold text-2xl text-gray-400 flex flex-col gap-1 mb-4">
+                                <h1 className="f">DATOS DE TRÁMITE</h1>
+                                <hr className="border-2 border-gray-400" />
+                            </div>
+                            <div className="flex flex-col gap-4 w-96">
+                                <div className="flex flex-col gap-1">
+                                    <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
+                                        Trámite
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            name="tramite"
+                                            value={tramite}
+                                            onChange={(e) => setTramite(e.target.value)}
+                                            className={`w-full border border-gray-300 p-2 px-4 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 ${tramite != '' && 'bg-gray-200'}`}
+                                        />
+                                    </div>
+                                </div>
+
+
+                                <div className="flex flex-col gap-1">
+                                    <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
+                                        Requisitos trámite
+                                    </label>
+                                    <div className="">
+                                        <ul className="list-disc pl-4">
+                                            {requisitos.map((requisito, index) => (
+                                                <li key={index} className="text-sm ml-2">
+                                                    {/*{requisito.obtenido ? (
                                                     <span className="line-through">{requisito.nombre}</span>
                                                 ) : (
                                                     requisito.nombre
                                                 )}*/}
-                                                <span className="">{requisito}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
+                                                    <span className="">{requisito}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="flex flex-col gap-1">
-                                <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
-                                    Documentos <i className="bi bi-asterisk text-red-500 ml-2"/>
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type="file"
-                                        name="archivo"
-                                        className={`w-full border border-gray-300 p-2 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500`}
-                                    />
+
+                                <div className="flex flex-col gap-1">
+                                    <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
+                                        Código Boucher <i className="bi bi-asterisk text-red-500 ml-2" />
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type="text"
+                                            ref={refBoucher}
+                                            name="codigo"
+                                            placeholder="Ingrese el código del Boucher"
+                                            value={codigoBoucher}
+                                            onChange={(e) => setCodigoBoucher(e.target.value)}
+                                            className={`w-full border border-gray-300 p-2 px-4 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                                        />
+                                        {
+                                            true ?
+                                                <div title="Pago verificado"
+                                                    className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-green-400 text-white px-1 rounded-full">
+                                                    <i className="bi bi-check" />
+                                                </div>
+                                                :
+                                                <div title="Pago no encontrado"
+                                                    className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-red-400 text-white px-1 rounded-full">
+                                                    <i className="bi bi-x" />
+                                                </div>
+                                        }
+                                    </div>
                                 </div>
-                            </div>
+                                <div className="flex flex-col gap-1">
+                                    <label className="flex items-center font-bold text-xs text-gray-500 uppercase">
+                                        Documentos <i className="bi bi-asterisk text-red-500 ml-2" />
+                                    </label>
+                                    <div className="relative">
+                                        <input
+                                            type="file"
+                                            name="archivo"
+                                            className={`w-full border border-gray-300 mt-2 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                                        />
+                                    </div>
+                                </div>
 
-                            {/* Select */}
+                                {/* Select */}
 
-                            {/*<div className="flex flex-col gap-1">
+                                {/*<div className="flex flex-col gap-1">
                             <label className="flex items-center font-semibold">
                                 Carrera
                             </label>
@@ -239,81 +316,101 @@ const FormularioEntrada = () => {
                             </select>
                         </div>*/}
 
-                            <hr className="border border-white mt-2" />
-                            {/* Agregar códigos nuevos*/}
-                            <div className="flex flex-col gap-4">
-                                <div className="flex justify-between ">
-                                    <span className="font-bold my-auto text-gray-500">
-                                        AUTORES <i className="bi bi-asterisk text-xs text-red-500 ml-2">   ( Máximo 4 )</i>
-                                    </span>
-                                    {//Si superan la cantidad de 4 no se puede agregar
-                                        codigos.length < 4 && (
-                                            <button
-                                                type="button"
-                                                onClick={handleAgregarCodigo}
-                                                className="bg-gray-500 text-white px-2 py-2 rounded-md text-xs hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue flex gap-2"
-                                            >
-                                                Agregar Código <i className="bi bi-plus-circle" />
-                                            </button>
-                                        )
-                                    }
-                                </div>
+                                <hr className="border border-white mt-2" />
+                                {/* Agregar códigos nuevos*/}
+                                <div className="flex flex-col gap-4">
+                                    <div className="flex justify-between ">
+                                        <span className="font-bold my-auto text-gray-500">
+                                            AUTORES {/*<i className="bi bi-asterisk text-xs text-red-500 ml-2">   ( Máximo 4 )</i>*/}
+                                        </span>
+                                        {//Si superan la cantidad de 4 no se puede agregar
+                                            codigos.length < 4 && (
+                                                <button
+                                                    type="button"
+                                                    onClick={handleAgregarCodigo}
+                                                    className="bg-gray-500 text-white p-2 rounded-md text-xs hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue flex gap-2"
+                                                >
+                                                    Agregar Código <i className="bi bi-plus-circle" />
+                                                </button>
+                                            )
+                                        }
+                                    </div>
 
-                                {
-                                    codigos.map((codigo, index) => (
-                                        <div key={index} className="flex w-full justify-between gap-4">
-                                            <label className="flex items-center font-semibold text-sm pl-1 w-8">
-                                                # {index + 1}
-                                            </label>
-                                            <div className="relative w-full">
-                                                <input
-                                                    type="text"
-                                                    value={codigo}
-                                                    onChange={(e) => handleCodigoChange(index, e.target.value)}
-                                                    className="w-full border border-gray-300 p-2 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                                    placeholder={`Ingrese el código del  #${index + 1}`}
-                                                />
+                                    {
+                                        codigos.map((codigo, index) => (
+                                            <div key={index} className="flex w-full justify-between gap-4">
+                                                <label className="flex items-center font-semibold text-sm pl-1 w-8">
+                                                    # {index + 1}
+                                                </label>
+                                                <div className="relative w-full">
+                                                    <input
+                                                        type="text"
+                                                        value={codigo}
+                                                        onChange={(e) => handleCodigoChange(index, e.target.value)}
+                                                        className="w-full border border-gray-300 p-2 px-4 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                        placeholder={`Ingrese el código del  #${index + 1}`}
+                                                    />
+                                                    {
+                                                        index % 2 == 0 ?
+                                                            <div title="Pago verificado"
+                                                                className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-green-400 text-white px-1 rounded-full">
+                                                                <i className="bi bi-check" />
+                                                            </div>
+                                                            :
+                                                            <div title="Pago no encontrado"
+                                                                className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-red-400 text-white px-1 rounded-full">
+                                                                <i className="bi bi-x" />
+                                                            </div>
+                                                    }
+
+                                                </div>
                                                 {
-                                                    index % 2 == 0 ?
-                                                        <div className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-green-400 text-white px-1 rounded-full">
-                                                            <i className="bi bi-check" />
-                                                        </div>
-                                                        :
-                                                        <div className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-red-400 text-white px-1 rounded-full">
-                                                            <i className="bi bi-x" />
-                                                        </div>
+                                                    codigos.length > 1 && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleEliminarCodigo(index)}
+                                                            className="text-gray-500 hover:text-red-500 hover:underline focus:outline-none text-lg"
+                                                        >
+                                                            <i className="bi bi-trash3" />
+                                                        </button>
+                                                    )
                                                 }
-
                                             </div>
-                                            {
-                                                codigos.length > 1 && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleEliminarCodigo(index)}
-                                                        className="text-gray-500 hover:text-red-500 hover:underline focus:outline-none text-lg"
-                                                    >
-                                                        <i className="bi bi-trash3" />
-                                                    </button>
-                                                )
-                                            }
-                                        </div>
-                                    ))
+                                        ))
 
-                                }
-                                <div className="flex w-full">
+                                    }
+
+                                </div>
+                                <div className="flex w-full justify-between mt-4">
+                                    <button
+                                        //type="submit"
+                                        onClick={handlePrev}
+                                        className=" text-gray-400 px-4 py-2 rounded-md hover:bg-gray-400 hover:text-white focus:outline-none focus:shadow-outline-blue flex gap-4"
+                                    >
+                                        <i className="bi bi-arrow-left" /> Volver {/*<i className="bi bi-arrow-right-square" />*/}
+                                    </button>
                                     <button
                                         type="button"
-                                        //onClick={}
-                                        className="m-auto bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:shadow-outline-blue flex gap-2"
+                                        onClick={handleBotonClick}
+                                        //disabled={deshabilitadoBoton()}//
+                                        className={` text-white px-4 py-2 rounded-md  focus:outline-none focus:shadow-outline-blue flex gap-2
+                                            ${deshabilitadoBoton() ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-700'}
+                                        `}
                                     >
-                                        Verificar Pago <i className="bi bi-check-circle" />
+                                        Registrar trámite {/*<i className="bi bi-check-circle" />*/}
                                     </button>
                                 </div>
-
-
+                                <div className="relative flex flex-wrap justify-center mt-4">
+                                    <span className="text-xs">
+                                        Todos los campos con <i className="bi bi-asterisk text-xs text-red-500"></i> son oblicatorios
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
+
+
+
                 </div>
             </div>
 
