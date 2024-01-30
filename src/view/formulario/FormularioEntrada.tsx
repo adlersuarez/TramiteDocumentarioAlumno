@@ -14,6 +14,7 @@ const FormularioEntrada = () => {
     const [direccion, setDireccion] = useState<string>('Av. Giraldez N° 164')
 
     const [codigoBoucher, setCodigoBoucher] = useState<string>('')
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
     const refBoucher = useRef<HTMLInputElement>(null)
 
@@ -49,16 +50,29 @@ const FormularioEntrada = () => {
         setCodigos(newCodigos);
     };
 
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            const filesArray = Array.from(event.target.files);
+            setSelectedFiles((prevFiles) => [...prevFiles, ...filesArray]);
+        }
+    };
+
+    const removeFile = (index: number) => {
+        const newFiles = [...selectedFiles];
+        newFiles.splice(index, 1);
+        setSelectedFiles(newFiles);
+    };
+
     interface StepIndicatorProps {
         stepNumber: number;
         currentStep: number;
     }
 
     const StepIndicator: React.FC<StepIndicatorProps> = ({ stepNumber, currentStep }) => (
-        <div className="flex items-center">
-            <div className={`w-14 h-14 rounded-full text-3xl font-bold flex items-center justify-center border-4
-                            ${currentStep == stepNumber ? 'border-blue-500 text-blue-500' : 'border-gray-400 text-gray-400'
-                }`}
+        <div className="flex items-center ">
+            <div className={`w-14 h-14 rounded-full text-3xl font-bold flex items-center justify-center border-4 
+                            ${currentStep === stepNumber ? 'border-gray-500 bg-gray-500 text-white' : 'border-gray-400 text-gray-400'}
+                            transition-all transition-duration-3000 ease-in-out`}
             >
                 {stepNumber}
             </div>
@@ -88,12 +102,12 @@ const FormularioEntrada = () => {
     return (
 
         <div className="flex flex-wrap w-screen h-screen bg-gray-200 ">
-            <div className="mx-auto mt-20">
+            <div className="mx-auto my-16">
                 <div className="grid grid-cols-1 gap-8 justify-start">
                     <Toaster />
                     <div className="flex items-center justify-between w-60 gap-4 mx-auto">
                         <StepIndicator stepNumber={1} currentStep={step} />
-                        <div className="border-2 border-gray-300 flex-grow" />
+                        <div className="border-2 border-gray-400 flex-grow" />
                         <StepIndicator stepNumber={2} currentStep={step} />
                     </div>
 
@@ -204,7 +218,7 @@ const FormularioEntrada = () => {
                                     <button
                                         //type="submit"
                                         onClick={handleNext}
-                                        className="w-full justify-center bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-800 focus:outline-none focus:shadow-outline-blue flex gap-4"
+                                        className="w-full justify-center bg-gray-400 text-white px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none focus:shadow-outline-blue flex gap-4"
                                     >
                                         Continuar {/*<i className="bi bi-arrow-right-square" />*/}
                                     </button>
@@ -215,7 +229,7 @@ const FormularioEntrada = () => {
                     }
                     {
                         step === 2 &&
-                        <div className="bg-white mx-auto p-8 rounded-lg">
+                        <div className="bg-white mx-auto p-8 rounded-lg ">
 
                             <div className="font-bold text-2xl text-gray-400 flex flex-col gap-1 mb-4">
                                 <h1 className="f">DATOS DE TRÁMITE</h1>
@@ -294,10 +308,46 @@ const FormularioEntrada = () => {
                                         <input
                                             type="file"
                                             name="archivo"
-                                            className={`w-full border border-gray-300 mt-2 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500`}
+                                            multiple
+                                            onChange={handleFileChange}
+                                            className={`w-full border pr-4 border-gray-300 mt-2 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500`}
                                         />
                                     </div>
                                 </div>
+                                {
+                                    selectedFiles.length !== 0 &&
+                                    <div className="w-full">
+                                        <table className="w-full">
+                                            <thead>
+                                                <tr className="text-sm">
+                                                    <th className="border px-4 py-1">Archivo</th>
+                                                    <th className="border py-1">-</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {
+                                                    selectedFiles.map((file, index) => (
+                                                        <tr key={index}>
+                                                            <td title={file.name}
+                                                                className="border px-4 py-2 max-w-xs text-xs overflow-hidden whitespace-nowrap overflow-ellipsis">
+                                                                {file.name}
+                                                            </td>
+                                                            <td className="border px-2 py-2 flex">
+                                                                <button
+                                                                    title="Quitar archivo"
+                                                                    onClick={() => removeFile(index)}
+                                                                    className="bg-gray-400 hover:bg-red-600 text-white rounded px-1 mx-auto"
+                                                                >
+                                                                    <i className="bi bi-trash3" />
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    ))
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
 
                                 {/* Select */}
 
@@ -385,16 +435,16 @@ const FormularioEntrada = () => {
                                     <button
                                         //type="submit"
                                         onClick={handlePrev}
-                                        className=" text-gray-400 px-4 py-2 rounded-md hover:bg-gray-400 hover:text-white focus:outline-none focus:shadow-outline-blue flex gap-4"
+                                        className=" text-gray-400 px-4 py-2 pl-1 rounded-md  focus:outline-none focus:shadow-outline-blue flex gap-4"
                                     >
-                                        <i className="bi bi-arrow-left" /> Volver {/*<i className="bi bi-arrow-right-square" />*/}
+                                        {/*<i className="bi bi-arrow-left" />*/} Volver {/*<i className="bi bi-arrow-right-square" />*/}
                                     </button>
                                     <button
                                         type="button"
                                         onClick={handleBotonClick}
                                         //disabled={deshabilitadoBoton()}//
-                                        className={` text-white px-4 py-2 rounded-md  focus:outline-none focus:shadow-outline-blue flex gap-2
-                                            ${deshabilitadoBoton() ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-700'}
+                                        className={` text-white px-4 py-2 rounded-md  focus:outline-none focus:shadow-outline-blue flex gap-2 bg-gray-400
+                                            ${!deshabilitadoBoton() && 'hover:bg-blue-600'}
                                         `}
                                     >
                                         Registrar trámite {/*<i className="bi bi-check-circle" />*/}
