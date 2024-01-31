@@ -17,6 +17,7 @@ const FormularioEntrada = () => {
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
     const refBoucher = useRef<HTMLInputElement>(null)
+    const refDocumentos = useRef<HTMLInputElement>(null)
 
     const [step, setStep] = useState(1);
 
@@ -84,8 +85,8 @@ const FormularioEntrada = () => {
 
     const deshabilitadoBoton = () => {
         if (codigoBoucher.trim() === '') return true
-        // Agregar mas lógica // validez de boucher
-
+        if (selectedFiles.length === 0) return true
+        // Agregar mas lógica // validez de boucher //cantidad de documentos
     }
 
     const handleBotonClick = () => {
@@ -93,6 +94,12 @@ const FormularioEntrada = () => {
         if (codigoBoucher.trim() === '') {
             toast.error("Debes incluir el código de tu boucher en el trámite")
             refBoucher.current?.focus()
+            return
+        }
+
+        if (selectedFiles.length === 0) {
+            toast.error("Debes incluir los documentos requeridos para el trámite")
+            refDocumentos.current?.focus()
             return
         }
 
@@ -287,7 +294,8 @@ const FormularioEntrada = () => {
                                             className={`w-full border border-gray-300 p-2 px-4 rounded-md placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500`}
                                         />
                                         {
-                                            true ?
+                                            // APLICAR LA VALIDEZ DEL BOUCHER AQUI
+                                            codigoBoucher ?
                                                 <div title="Pago verificado"
                                                     className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-green-400 text-white px-1 rounded-full">
                                                     <i className="bi bi-check" />
@@ -307,6 +315,7 @@ const FormularioEntrada = () => {
                                     <div className="relative">
                                         <input
                                             type="file"
+                                            ref={refDocumentos}
                                             name="archivo"
                                             multiple
                                             onChange={handleFileChange}
@@ -401,7 +410,8 @@ const FormularioEntrada = () => {
                                                         placeholder={`Ingrese el código del  #${index + 1}`}
                                                     />
                                                     {
-                                                        index % 2 == 0 ?
+                                                        //APLICAR LA VALIDEZ DE LOS CÓDIGOS EXTRAS AQUI
+                                                        codigo ?
                                                             <div title="Pago verificado"
                                                                 className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-green-400 text-white px-1 rounded-full">
                                                                 <i className="bi bi-check" />
